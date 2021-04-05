@@ -14,6 +14,8 @@ namespace ClickUpViewer
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
+            // dotnet watch run
+            // yarn run watch
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
