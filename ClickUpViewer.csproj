@@ -27,8 +27,10 @@
   </Target>
 
   <ItemGroup>
+    <PackageReference Include="Chinchilla.ClickUp" Version="2.0.8.2" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    <PackageReference Include="ZLogger" Version="1.4.1" />
   </ItemGroup>
 
 </Project>
