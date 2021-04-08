@@ -26,7 +26,7 @@
               <v-row>
                 <v-col>
                   <form onsubmit="return false;">
-                  <v-text-field label="Token"></v-text-field>
+                    <v-text-field label="Token"></v-text-field>
                   </form>
                 </v-col>
               </v-row>

@@ -10,13 +10,13 @@ const routes: Array<RouteConfig> = [
     name: "Home",
     component: Home,
   },
-  // {
-  //   path: "/DailyList",
-  //   name: "DailyList",
-  //   props: (route) => (route.query),
-  //   component: () =>
-  //     import(/* webpackChunkName: "daily-list" */ "../views/DailyList.vue")
-  // },
+  {
+    path: "/DailyList",
+    name: "DailyList",
+    props: (route) => route.query,
+    component: () =>
+      import(/* webpackChunkName: "daily-list" */ "../views/DailyList.vue"),
+  },
 ];
 
 const router = new VueRouter({

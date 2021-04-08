@@ -58,7 +58,7 @@ export interface UserClickUp {
 
 export interface GetTaskParameter {
   archived: boolean;
-  page: number
+  page: number;
   subtasks: boolean;
   statuses: string[];
   include_closed: boolean;

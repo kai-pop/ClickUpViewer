@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ClickUpViewer.Domain.ClickUp;
+using ClickUpViewer.ViewModels.Chart;
 using Cysharp.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -21,9 +22,15 @@ namespace ClickUpViewer.Controllers
         }
 
         [HttpGet]
-        public async Task<object> Get(string teamId, string listId, DateTime? startDate, DateTime? endDate, string tagNames)
+        public async Task<ChartViewModel<int?>> Qty(
+            string teamId, 
+            string listId, 
+            DateTime? startDate, 
+            DateTime? endDate, 
+            string tagNames,
+            string token)
         {
-            var api = new Infrastructure.WebApi.Api("");
+            var api = new Infrastructure.WebApi.Api(token);
 
             var members = await api.GetListMembers(listId);
 
@@ -58,10 +65,18 @@ namespace ClickUpViewer.Controllers
                 {
                     TaskId = x.Key,
                     Duration = DateTimeOffset.FromUnixTimeMilliseconds(x.Sum(y => y.Duration)),
-                    End = DateTimeOffset.FromUnixTimeMilliseconds((x.Max(y => y.End)))
-                });
+                    End = DateTimeOffset.FromUnixTimeMilliseconds((x.Max(y => y.End))).Date
+                })
+                .ToArray();
 
-            var contents = timeEntriesGroupingTask
+
+            var dates = timeEntriesGroupingTask
+                .Select(x => x.End)
+                .Distinct()
+                .OrderBy(t => t)
+                .ToArray();
+
+            var series = timeEntriesGroupingTask
                             .Join(tasks, x => x.TaskId, x => x.Id, (time, task) => (time, task))
                             .Select(x => new
                             {
@@ -71,8 +86,31 @@ namespace ClickUpViewer.Controllers
                                 Title = x.task.Name,
                                 DurationMinuets = x.time.Duration.TimeOfDay.TotalMinutes,
                                 End = x.time.End
+                            })
+                            .GroupBy(x => x.TagName)
+                            .Select(x => new Series<int?>()
+                            {
+                                Name = x.Key,
+                                Data = dates
+                                    .GroupJoin(
+                                        x.GroupBy(y => y.End).Select(y => new { End = y.Key, Qty = y.Sum(z => z.Qty) }),
+                                        y => y,
+                                        y => y.End,
+                                        (date, result) => (date, result)
+                                    )
+                                    .SelectMany(
+                                        x => x.result.DefaultIfEmpty(),
+                                        (date, result) => result.Qty == 0 ? null : (int?)result.Qty
+                                    )
                             });
-            return contents;
+
+            var chart = new ChartViewModel<int?>()
+            {
+                Categories = dates.Select(x => x.ToString("M/d")),
+                Series = series
+            };
+
+            return chart;
         }
     }
 }

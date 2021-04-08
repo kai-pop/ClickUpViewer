@@ -1,4 +1,4 @@
-interface ClickUpList{
-    id: number;
-    name: string;
+export interface ClickUpList {
+  id: number;
+  name: string;
 }

@@ -1,9 +1,9 @@
 import axios from "axios";
 
 export function getList(): any {
-    return "";
+  return "";
 }
 
 export function getResults(): any {
-    return null;
+  return null;
 }
